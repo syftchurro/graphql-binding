@@ -6,11 +6,13 @@
   "dependencies": {
     "apollo-link": "^1.2.6",
     "apollo-link-error": "^1.1.5",
+    "apollo-link-http": "^1.5.9",
     "apollo-link-ws": "^1.0.12",
     "graphql": "^14.0.2",
     "graphql-binding": "^2.3.8",
     "graphql-tools": "^4.0.3",
     "http-link-dataloader": "^0.1.6",
+    "node-fetch": "^2.3.0",
     "ws": "^6.1.2"
   }
 }
