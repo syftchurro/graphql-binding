@@ -1,4 +1,4 @@
-const binding = require('./binding')
+const Binding = require('./binding')
 const remoteBinding = require('./remoteBinding')
 
-module.exports = { binding, remoteBinding }
+module.exports = { Binding, remoteBinding }
