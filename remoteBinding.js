@@ -1,7 +1,7 @@
 const fetch = require('node-fetch')
 const { HttpLink } = require('apollo-link-http')
 const { introspectSchema } = require('graphql-tools')
-const Binding = require('./graphql-binding')
+const Binding = require('./binding')
 
 const remoteBinding = uri => {
   const link = new HttpLink({
