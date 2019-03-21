@@ -10,7 +10,7 @@ const {
 const ws = require('ws')
 const { HTTPLinkDataloader } = require('http-link-dataloader')
 
-module.exports = function makeLink ({ endpoint, token, debug, mock }) {
+module.exports = function makeLink ({ endpoint, typeDefs, token, debug, mock }) {
   let backendLink
   if (mock) {
     const schema = makeExecutableSchema({ typeDefs })
