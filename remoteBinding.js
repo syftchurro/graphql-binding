@@ -3,7 +3,7 @@ const { HttpLink } = require('apollo-link-http')
 const { introspectSchema } = require('graphql-tools')
 const Binding = require('./binding')
 
-const remoteBinding = uri => {
+const remoteBinding = (uri, mock = false) => {
   const link = new HttpLink({
     uri,
     fetch
@@ -12,7 +12,8 @@ const remoteBinding = uri => {
     .then(typeDefs => {
       return new Binding({
         endpoint: uri,
-        typeDefs
+        typeDefs,
+        mock
       })
     })
     .catch(err => console.error(err))

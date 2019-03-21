@@ -2,35 +2,45 @@ const { print } = require('graphql')
 const { ApolloLink, split } = require('apollo-link')
 const { WebSocketLink } = require('apollo-link-ws')
 const { onError } = require('apollo-link-error')
+const { SchemaLink } = require('apollo-link-schema')
+const {
+  makeExecutableSchema,
+  addMockFunctionsToSchema
+} = require('graphql-tools')
 const ws = require('ws')
 const { HTTPLinkDataloader } = require('http-link-dataloader')
 
-module.exports = function makeLink ({ endpoint, token, debug }) {
-  const httpLink = new HTTPLinkDataloader({
-    uri: endpoint,
-    headers: token ? { Authorization: `Bearer ${token}` } : {}
-  })
+module.exports = function makeLink ({ endpoint, token, debug, mock }) {
+  let backendLink
+  if (mock) {
+    const schema = makeExecutableSchema({ typeDefs })
+    addMockFunctionsToSchema({ schema });
+    backendLink = new SchemaLink({ schema })
+  } else {
+    const httpLink = new HTTPLinkDataloader({
+      uri: endpoint,
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    })
 
-  // also works for https/wss
-  const wsEndpoint = endpoint.replace(/^http/, 'ws')
-  const wsLink = new WebSocketLink({
-    uri: wsEndpoint,
-    options: {
-      reconnect: true,
-      connectionParams: token
-        ? {
-          Authorization: `Bearer ${token}`
-        }
-        : {},
-      lazy: true,
-      inactivityTimeout: 30000
-    },
-    webSocketImpl: ws
-  })
+    // also works for https/wss
+    const wsEndpoint = endpoint.replace(/^http/, 'ws')
+    const wsLink = new WebSocketLink({
+      uri: wsEndpoint,
+      options: {
+        reconnect: true,
+        connectionParams: token
+          ? {
+            Authorization: `Bearer ${token}`
+          }
+          : {},
+        lazy: true,
+        inactivityTimeout: 30000
+      },
+      webSocketImpl: ws
+    })
 
-  // TODO fix link typings
-  const backendLink = split(op => isSubscription(op), wsLink, httpLink)
-
+    backendLink = split(op => isSubscription(op), wsLink, httpLink)
+  }
   const reportErrors = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
       graphQLErrors.map(({ message, locations, path }) =>
