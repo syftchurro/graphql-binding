@@ -13,9 +13,27 @@ const { HTTPLinkDataloader } = require('http-link-dataloader')
 module.exports = function makeLink ({ endpoint, typeDefs, token, debug, mock }) {
   let backendLink
   if (mock) {
+    console.log()
     const schema = makeExecutableSchema({ typeDefs })
-    addMockFunctionsToSchema({ schema });
-    backendLink = new SchemaLink({ schema })
+    addMockFunctionsToSchema({
+      schema,
+      mocks: {
+        // random string
+        ID: () => {
+          return (
+            Math.random()
+              .toString(36)
+              .substring(2, 15) +
+            Math.random()
+              .toString(36)
+              .substring(2, 15)
+          )
+        }
+      }
+    })
+    backendLink = new SchemaLink({
+      schema
+    })
   } else {
     const httpLink = new HTTPLinkDataloader({
       uri: endpoint,
