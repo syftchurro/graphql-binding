@@ -16,7 +16,9 @@ const remoteBinding = (uri, mock = false) => {
         mock
       })
     })
-    .catch(err => console.error(err))
+    .catch(err => {
+      throw err 
+    })
 }
 
 module.exports = remoteBinding
